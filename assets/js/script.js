@@ -56,10 +56,18 @@ $(document).ready(function() {
         $("#pauseGeneration").css("display", "none");
         $("#startGeneration").css("display", "inline-block");
         console.log("Resetting Generation");
-        generation = 0;
+        
         for (var i = 0; i < images.length; i++) {
             images[i] = genRandom(c);
         }
+        c.generation = 0;
+        
+        //nonsense code just resets the pixels on board. probably wanna change this
+        c.changeChild(images);
+        c.changeChild(images);
+        //end nonsense
+        
+        
         clearInterval(clock);
     });
     
@@ -100,7 +108,7 @@ class Canvas {
     constructor(canvas, width, height, typeOfChild) {
 
         this.canvas = canvas;
-        
+        this.generation = generation;
         this.w = width;
         this.h = height;
         
@@ -126,6 +134,7 @@ class Canvas {
                 this.fillPixel("rgb(" + p[0].toString() + ", " + p[1].toString() + ", " + p[2].toString() + ")", i, j)
             }
         }
+        $("#generationNumber").text(this.generation);
     }
     
     changeImage(image) {
@@ -153,8 +162,7 @@ class Canvas {
         var imgs = evolve(images).slice();
         this.changeImage(imgs[(imgs.length - 1)*(this.typeOfChild%2)]);
         this.fitToWindow();
-        generation += 1;
-        $("#generationNumber").text(generation);
+        this.generation += 1;
     }
     
     changeChild(images) {
