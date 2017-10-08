@@ -1,5 +1,14 @@
-const NUM_IMAGES = 30*2; //always even
-const IMAGE_WIDTH = 10;
+const NUM_IMAGES = 20*2; //always even
+const IMAGE_WIDTH = 7;
+
+//global var
+
+var generation = 0;
+$("#generationNumber").text(0);
+var typeOfChild = 0;
+var typeOfChildren = ["Best", "Worst"]
+$("#typeOfChild").text(typeOfChildren[0]);
+
 var canvas = document.getElementById("canv");
 canvas.width = IMAGE_WIDTH;
 canvas.height = IMAGE_WIDTH;
@@ -7,7 +16,7 @@ var cWidth = canvas.width;
 var cHeight = canvas.height;
 
 $(document).ready(function() {
-    var c = new Canvas($("#canv"), cWidth, cHeight);
+    var c = new Canvas($("#canv"), cWidth, cHeight, typeOfChild);
     var images = [];
     var clock = setInterval(function(){
         c.fitToWindow();
@@ -22,7 +31,7 @@ $(document).ready(function() {
         console.log("Generating New Image");
         clearInterval(clock);
         clock = setInterval( function() {
-            return update(images, c);
+            return c.update(images);
         }, 50);
     });
     $("#pauseGeneration").click(function(event) {
@@ -39,7 +48,7 @@ $(document).ready(function() {
         $("#pauseGeneration").css("display", "inline-block");
         clearInterval(clock);
         clock = setInterval(function() {
-            return update(images, c);
+            return c.update(images);
         }, 50);
     });
     $("#resetGeneration").click(function(event) {
@@ -47,11 +56,18 @@ $(document).ready(function() {
         $("#pauseGeneration").css("display", "none");
         $("#startGeneration").css("display", "inline-block");
         console.log("Resetting Generation");
+        generation = 0;
         for (var i = 0; i < images.length; i++) {
             images[i] = genRandom(c);
         }
         clearInterval(clock);
     });
+    
+    
+    $("#typeOfChild").click(function(event) {
+        setTypeOfChild(c.changeChild(images));
+    });
+    
 });
 
 class Image {
@@ -81,7 +97,7 @@ function genRandom(canvas) {
 }
 
 class Canvas {
-    constructor(canvas, width, height) {
+    constructor(canvas, width, height, typeOfChild) {
 
         this.canvas = canvas;
         
@@ -92,6 +108,7 @@ class Canvas {
         this.context.imageSmoothingEnabled = true;
         //this.fitToWindow();
         this.image = genRandom(this);
+        this.typeOfChild = typeOfChild;
     }
     
     fillPixel(colr, x, y) {
@@ -132,17 +149,24 @@ class Canvas {
     clear() {
         this.context.clearRect(0, 0, this.w, this.h);
     }
+    update(images) {
+        var imgs = evolve(images).slice();
+        this.changeImage(imgs[(imgs.length - 1)*(this.typeOfChild%2)]);
+        this.fitToWindow();
+        generation += 1;
+        $("#generationNumber").text(generation);
+    }
+    
+    changeChild(images) {
+        this.typeOfChild += 1;
+        this.changeImage(images[(images.length - 1)*(this.typeOfChild%2)]);
+        return this.typeOfChild;
+    }
 }
 
 
 
-function update(images, canvas) {
-    
-    var imgs = evolve(images).slice();
-    canvas.changeImage(imgs[0]);
-    canvas.fitToWindow();
-    
-}
+
     
 
 
@@ -201,4 +225,9 @@ function mlScore(image, canvas) {
     
 function randomRGB() {
     return Math.floor(Math.random()*255);
+}
+
+
+function setTypeOfChild(typeOfChild) {
+    $("#typeOfChild").text(typeOfChildren[typeOfChild%typeOfChildren.length]);
 }

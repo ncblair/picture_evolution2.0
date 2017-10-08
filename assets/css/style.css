@@ -16,6 +16,11 @@
     background-color:lightskyblue;
 }
 
+#typeOfChild {
+    display:inline-block;
+    color:cornflowerblue;
+}
+
 #canv {
     image-rendering:pixelated;
     width:500px;
