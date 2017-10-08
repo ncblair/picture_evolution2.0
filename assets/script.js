@@ -11,7 +11,21 @@ $(".button").click(function() {
     
 });
 
-
+class Image() {
+    
+    //takes in a list of pixels of length w*h (traverse east then south from topLeft)
+    constructor(pixels) {
+        this.pixels = pixels;
+    }
+    
+    function getVol(twoDArray) {
+        return;
+    }
+    
+    function getJSON() {
+        
+    }
+}
 
 function main() {
 
@@ -23,12 +37,32 @@ function main() {
     }
 }
 
+
 function genRandom() {
+    var pixels = [];
+    for (int i = 0; i < w*h; i++) {
+        pixels[i] = [Math.random()*255, Math.random()*255, Math.random()*255]
+    }
+    return new Image(pixels);
+}
+
+function evolve(images) {
+    images.sort(function(im1, im2) {
+        return mlScore(im1) - mlScore(im2);
+    });   
+    var survivors = images.splice(0,Math.ceil(images.length / 2));
+    var mutated = [];
+    for (var img of survivors) {
+        mutated.push(mutate(img));
+    }
+    return survivors.concat(mutated);
+}
+
+function mutate(images) {
     
 }
 
-
-drawOnCanvas(image) {
+function drawOnCanvas(image) {
     for (var i = 0; i < h; i++) {
         for (var j = 0; j < w; j++) {
             context.fillStyle = image[i][j];
