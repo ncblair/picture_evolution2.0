@@ -2,27 +2,16 @@
 <html>
     <head>
         <title>Picture Evolution</title>
-        <link rel = "stylesheet" type = "text/css" href = "/assets/style.css">
+        <link rel = "stylesheet" type = "text/css" href = "assets/css/style.css">
     </head>
     <body>
-        <center><h1 class = "title">Picture Evolution with ML</h1>
-        <form method="post" action="{{ url_for('newImg') }}">
-            <label class = "label" id = "generateDefaultLabel">Generate an Apple</label>
-            <input id = "generateDefault" type = "submit" value = "Generate Another">
-        </form>
+        <center>
+            <h1 class = "title">Picture Evolution with ML</h1>
+            <label id = "generateDefault">Generate an Apple</label>
         </center>
         <br>
         
-        <center><img class = "result" src = "assets/images/result_image0.png"></center>
-        
-        
-        <!--
-        <form>
-            <label class = "label">Copy and Paste your metafile here</label>
-            <input class = "submit" type = "submit">
-            <textarea class="field" cols="100" rows="50"></textarea>
-        </form>
-        -->
+        <center><canvas id = "canv" width = "1000" height = "1000"></canvas></center>
         <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 	    <script type="text/javascript" src="assets/js/script.js"></script>
     </body>
