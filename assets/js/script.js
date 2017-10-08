@@ -1,5 +1,5 @@
 const NUM_IMAGES = 20*2; //always even
-const IMAGE_WIDTH = 7;
+const IMAGE_WIDTH = 5;
 
 //global var
 
@@ -202,13 +202,14 @@ function mutate(image) {
     var oldPixels = image.pixels;
     
     for (var pix of oldPixels) {
-        if (Math.random() > .95) {
-            /*var a = Math.floor((pix[0] + randomRGB())/2);
-            var b = Math.floor((pix[1] + randomRGB())/2);
-            var c = Math.floor((pix[2] + randomRGB())/2);*/
-            var a = randomRGB();
+        if (Math.random() > .97) {
+            var weight = Math.random();
+            var a = Math.floor((pix[0]*(weight) + randomRGB()*(1-weight)));
+            var b = Math.floor((pix[1]*(weight) + randomRGB()*(1-weight)));
+            var c = Math.floor((pix[2]*(weight) + randomRGB()*(1-weight)));
+            /*var a = randomRGB();
             var b = randomRGB();
-            var c = randomRGB();
+            var c = randomRGB();*/
             newImagePixels.push([a, b, c]);
         }
         else {
