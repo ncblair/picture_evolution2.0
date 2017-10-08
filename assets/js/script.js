@@ -1,7 +1,6 @@
 const NUM_IMAGES = 30*2; //always even
 const IMAGE_WIDTH = 10;
 var canvas = document.getElementById("canv");
-var button = document.getElementById("generateDefault");
 canvas.width = IMAGE_WIDTH;
 canvas.height = IMAGE_WIDTH;
 var cWidth = canvas.width;
@@ -10,16 +9,48 @@ var cHeight = canvas.height;
 $(document).ready(function() {
     var c = new Canvas($("#canv"), cWidth, cHeight);
     var images = [];
-    
+    var clock = setInterval(function(){
+        c.fitToWindow();
+    }, 50);
     for (var i = 0; i < NUM_IMAGES; i++) {
         images.push(genRandom(c));
     }
     c.render();
-    button.addEventListener("click", function(event) {
+    $("#startGeneration").click(function(event) {
+        $("#startGeneration").css("display", "none");
+        $("#pauseGeneration").css("display", "inline-block");
         console.log("Generating New Image");
-        setInterval(function() {
+        clearInterval(clock);
+        clock = setInterval( function() {
             return update(images, c);
         }, 50);
+    });
+    $("#pauseGeneration").click(function(event) {
+        console.log("Pausing Generation");
+        $("#pauseGeneration").css("display", "none");
+        $("#resumeGeneration").css("display", "inline-block");
+        clearInterval(clock);
+        
+        
+    });
+    $("#resumeGeneration").click(function(event) {
+        console.log("Pausing Generation");
+        $("#resumeGeneration").css("display", "none");
+        $("#pauseGeneration").css("display", "inline-block");
+        clearInterval(clock);
+        clock = setInterval(function() {
+            return update(images, c);
+        }, 50);
+    });
+    $("#resetGeneration").click(function(event) {
+        $("#resumeGeneration").css("display", "none");
+        $("#pauseGeneration").css("display", "none");
+        $("#startGeneration").css("display", "inline-block");
+        console.log("Resetting Generation");
+        for (var i = 0; i < images.length; i++) {
+            images[i] = genRandom(c);
+        }
+        clearInterval(clock);
     });
 });
 
@@ -87,13 +118,14 @@ class Canvas {
     
     fitToWindow() {
         //make sure canvas fits in screen
-        if ($(window).height() < $(window).width()) {
-            this.canvas.height("500px");
+        var top = document.getElementById("canv").getBoundingClientRect().top;
+        if (($(window).height() - top - 30) < $(window).width()) {
+            this.canvas.height($(window).height() - top - 30);
             this.canvas.width("auto");                    
         }
         else {
             this.canvas.height("auto");
-            this.canvas.width("500px");
+            this.canvas.width($(window).width()*.7);    
         }
     }
     
@@ -107,7 +139,6 @@ class Canvas {
 function update(images, canvas) {
     
     var imgs = evolve(images).slice();
-    console.log(imgs.length);
     canvas.changeImage(imgs[0]);
     canvas.fitToWindow();
     

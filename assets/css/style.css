@@ -1,12 +1,37 @@
-#generateDefault {
-    margin-left:40px;
-    display:block;
-    width:300px;
-    height:50px;
-    background-color:lightblue;
+*{color:font-family:sans-serif;}
+
+#startGeneration{
+    background-color:lightgreen;
 }
+
+#pauseGeneration {
+    display:none;
+    background-color:lightcoral;
+}
+#resumeGeneration {
+    display:none;
+    background-color:lavender;
+}
+#resetGeneration {
+    background-color:lightskyblue;
+}
+
 #canv {
     image-rendering:pixelated;
-    width:100%;
-    height:auto;
+    width:500px;
+    height:500px;
+}
+
+.options {
+    margin-top:10px;
+    margin-bottom:20px;
+    display:inline-block;
+}
+
+.option {
+    border-radius:10px;
+    padding:10px;
+    height:30px;
+    display:inline-block;
+    line-height:30px;
 }
