@@ -1,35 +1,27 @@
-const NUM_IMAGES = 6*2; //always even
-const IMAGE_WIDTH = 5;
-const NUM_ITERATIONS = 100000;
+const NUM_IMAGES = 30*2; //always even
+const IMAGE_WIDTH = 10;
 var canvas = document.getElementById("canv");
-var context = canvas.getContext("2d");
+var button = document.getElementById("generateDefault");
 canvas.width = IMAGE_WIDTH;
 canvas.height = IMAGE_WIDTH;
-var w = canvas.width;
-var h = canvas.height;
-var globalImage;
+var cWidth = canvas.width;
+var cHeight = canvas.height;
 
-$("#generateDefault").click(function() {
-    console.log("Generating New Image");
-    globalImage = genRandom();
-    render();
-    main();
+$(document).ready(function() {
+    var c = new Canvas($("#canv"), cWidth, cHeight);
+    var images = [];
     
-});
-
-
-function render() {
-    this.requestAnimationFrame(render);
-    var pixels = globalImage.pixels;
-    for (var i = 0; i < w; i++) {
-        for (var j = 0; j < h; j++) {
-            var index = j*w + i;
-            var p = pixels[index];
-            context.fillStyle = "rgb(" + p[0].toString() + ", " + p[1].toString() + ", " + p[2].toString() + ")";
-            context.fillRect(i, j, 1, 1);
-        }
+    for (var i = 0; i < NUM_IMAGES; i++) {
+        images.push(genRandom(c));
     }
-}
+    c.render();
+    button.addEventListener("click", function(event) {
+        console.log("Generating New Image");
+        setInterval(function() {
+            return update(images, c);
+        }, 50);
+    });
+});
 
 class Image {
     
@@ -48,35 +40,85 @@ class Image {
     }
 }
 
-function main() {
-
-    var images = [];
-    
-    for (var i = 0; i < NUM_IMAGES; i++) {
-        images.push(genRandom(NUM_IMAGES, IMAGE_WIDTH));
-    }
-    render(images[0]);
-    for (var i = 0; i < NUM_ITERATIONS; i++) {
-        images = evolve(images);
-        globalImage = images[0]; 
-        
-    }
-    
-}
-
 //random image
-function genRandom() {
+function genRandom(canvas) {
     var pixels = [];
-    for (var i = 0; i < w*h; i++) {
+    for (var i = 0; i < canvas.w*canvas.h; i++) {
         pixels[i] = [randomRGB(), randomRGB(), randomRGB()];
     }
     return new Image(pixels);
 }
 
+class Canvas {
+    constructor(canvas, width, height) {
+
+        this.canvas = canvas;
+        
+        this.w = width;
+        this.h = height;
+        
+        this.context = canvas[0].getContext("2d");
+        this.context.imageSmoothingEnabled = true;
+        //this.fitToWindow();
+        this.image = genRandom(this);
+    }
+    
+    fillPixel(colr, x, y) {
+        this.context.fillStyle = colr;
+        this.context.fillRect(x, y, 1, 1);
+    }
+    
+    render() {
+        requestAnimationFrame(this.render.bind(this));
+        var pixels = this.image.pixels;
+        for (var i = 0; i < this.w; i++) {
+            for (var j = 0; j < this.h; j++) {
+                var index = j*this.w + i;
+                var p = pixels[index];
+                this.fillPixel("rgb(" + p[0].toString() + ", " + p[1].toString() + ", " + p[2].toString() + ")", i, j)
+            }
+        }
+    }
+    
+    changeImage(image) {
+        this.image = image;
+    }
+
+    
+    fitToWindow() {
+        //make sure canvas fits in screen
+        if ($(window).height() < $(window).width()) {
+            this.canvas.height("500px");
+            this.canvas.width("auto");                    
+        }
+        else {
+            this.canvas.height("auto");
+            this.canvas.width("500px");
+        }
+    }
+    
+    clear() {
+        this.context.clearRect(0, 0, this.w, this.h);
+    }
+}
+
+
+
+function update(images, canvas) {
+    
+    var imgs = evolve(images).slice();
+    console.log(imgs.length);
+    canvas.changeImage(imgs[0]);
+    canvas.fitToWindow();
+    
+}
+    
+
+
 function evolve(images) {
     images.sort(function(im1, im2) {
         return mlScore(im2) - mlScore(im1);
-    });   
+    });
     var survivors = images.splice(0,Math.ceil(images.length / 2));
     var mutated = [];
     
@@ -84,7 +126,11 @@ function evolve(images) {
     for (var img of survivors) {
         mutated.push(mutate(img));
     }
-    return survivors.concat(mutated);
+    var retVal = survivors.concat(mutated);
+    for (var i = 0; i < retVal.length; i++) {
+        images[i] = retVal[i];
+    }
+    return retVal;
 }
 
 //nondestructive
@@ -94,6 +140,9 @@ function mutate(image) {
     
     for (var pix of oldPixels) {
         if (Math.random() > .95) {
+            /*var a = Math.floor((pix[0] + randomRGB())/2);
+            var b = Math.floor((pix[1] + randomRGB())/2);
+            var c = Math.floor((pix[2] + randomRGB())/2);*/
             var a = randomRGB();
             var b = randomRGB();
             var c = randomRGB();
@@ -109,14 +158,12 @@ function mutate(image) {
 
 
 
-function mlScore(image) {
+function mlScore(image, canvas) {
     var total = 0;
-    for (var i =0; i < w; i++) {
-        for (var j = 0; j < h; j++) {
-            total += image.getPixel(i, j)[0];
-            total += image.getPixel(i, j)[1];
-            total += image.getPixel(i, j)[2];
-        }
+    for (var pixel of image.pixels) {
+        total += pixel[0];
+        total += pixel[1];
+        total += pixel[2];
     }
     return total;
 }
