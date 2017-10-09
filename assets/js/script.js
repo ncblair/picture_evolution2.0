@@ -191,7 +191,6 @@ class Canvas {
 
 
 
-
     
 
 
@@ -240,13 +239,15 @@ function mutate(image, canvas) {
 
 
 function mlScore(image, canvas) {
-    var total = 0;
-    for (var pixel of image.pixels) {
-        total += pixel[0];
-        total += pixel[1];
-        total += pixel[2];
-    }
-    return total;
+    // var total = 0;
+    // for (var pixel of image.pixels) {
+    //     total += pixel[0];
+    //     total += pixel[1];
+    //     total += pixel[2];
+    // }
+    // return total;
+
+    
 }
     
 function randomRGB() {
