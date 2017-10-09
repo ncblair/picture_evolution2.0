@@ -1,5 +1,5 @@
-const NUM_IMAGES = 20*2; //always even
-const IMAGE_WIDTH = 32;
+const NUM_IMAGES = 1000*2; //always even
+const IMAGE_WIDTH = 5;
 
 const invisibleCanvas = document.getElementById("invCanv");
 const invWidth = invisibleCanvas.width;
@@ -36,7 +36,7 @@ $(document).ready(function() {
         clearInterval(clock);
         clock = setInterval( function() {
             return c.update(images);
-        }, 50);
+        }, 20);
     });
     $("#pauseGeneration").click(function(event) {
         console.log("Pausing Generation");
@@ -53,7 +53,7 @@ $(document).ready(function() {
         clearInterval(clock);
         clock = setInterval(function() {
             return c.update(images);
-        }, 50);
+        }, 20);
     });
     $("#resetGeneration").click(function(event) {
         $("#resumeGeneration").css("display", "none");
@@ -201,7 +201,7 @@ class Canvas {
 
 function evolve(images, canvas) {
     images.sort(function(im1, im2) {
-        return score(im2) - score(im1);
+        return im2.score - im1.score;
     });
     var survivors = images.splice(0,Math.ceil(images.length / 2));
     var mutated = [];
