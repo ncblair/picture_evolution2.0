@@ -175,9 +175,6 @@ class Canvas {
 
 
 
-    
-
-
 function evolve(images) {
     images.sort(function(im1, im2) {
         return mlScore(im2) - mlScore(im1);
@@ -223,13 +220,15 @@ function mutate(image) {
 
 
 function mlScore(image, canvas) {
-    var total = 0;
-    for (var pixel of image.pixels) {
-        total += pixel[0];
-        total += pixel[1];
-        total += pixel[2];
-    }
-    return total;
+    // var total = 0;
+    // for (var pixel of image.pixels) {
+    //     total += pixel[0];
+    //     total += pixel[1];
+    //     total += pixel[2];
+    // }
+    // return total;
+
+    
 }
     
 function randomRGB() {
