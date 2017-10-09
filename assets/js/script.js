@@ -97,7 +97,7 @@ class Image {
 
     
     getPixel(i, j) {
-        return this.pixels[j*w + i];
+        return this.pixels[j*this.canvas.w + i];
     }
     
     getImg() {
@@ -258,10 +258,3 @@ function setTypeOfChild(typeOfChild) {
     $("#typeOfChild").text(typeOfChildren[typeOfChild%typeOfChildren.length]);
 }
 
-
-
-
-
-
-
-$getJSON("https://ncblair.github.io/assets/json/file")
