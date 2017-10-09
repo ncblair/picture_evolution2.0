@@ -1,6 +1,9 @@
 const NUM_IMAGES = 20*2; //always even
-const IMAGE_WIDTH = 5;
+const IMAGE_WIDTH = 32;
 
+const invisibleCanvas = document.getElementById("invCanv");
+const invWidth = invisibleCanvas.width;
+const invHeight = invisibleCanvas.height;
 //global var
 
 var generation = 0;
@@ -17,6 +20,7 @@ var cHeight = canvas.height;
 
 $(document).ready(function() {
     var c = new Canvas($("#canv"), cWidth, cHeight, typeOfChild);
+    var ic = new Canvas($("#invCanv"), invWidth, invHeight, typeOfChild);
     var images = [];
     var clock = setInterval(function(){
         c.fitToWindow();
@@ -81,8 +85,9 @@ $(document).ready(function() {
 class Image {
     
     //takes in a list of pixels of length w*h (traverse east then south from topLeft)
-    constructor(pixels) {
+    constructor(pixels, canvas) {
         this.pixels = pixels;
+        this.canvas = canvas;
     }
     
     getVol() {
@@ -92,11 +97,24 @@ class Image {
                 w.push(pix[c])
             }
         }
-    }
 
     
     getPixel(i, j) {
-        return this.pixels[j*w + i];
+        return this.pixels[j*this.canvas.w + i];
+    }
+    
+    getImg() {
+        this.paint();
+        return this.canvas.imgData(0, 0, this.canvas.w, this.canvas.h);
+    }
+    
+    paint() {
+        for (var i = 0; i < this.canvas.w; i++) {
+            for (var j = 0; j < this.canvas.h ; j++) {
+                var p = this.getPixel(i, j);
+                this.canvas.fillPixel("rgb(" + p[0].toString() + ", " + p[1].toString() + ", " + p[2].toString() + ")", i, j);
+            }
+        }
     }
 }
 
@@ -106,7 +124,7 @@ function genRandom(canvas) {
     for (var i = 0; i < canvas.w*canvas.h; i++) {
         pixels[i] = [randomRGB(), randomRGB(), randomRGB()];
     }
-    return new Image(pixels);
+    return new Image(pixels, canvas);
 }
 
 class Canvas {
@@ -131,15 +149,12 @@ class Canvas {
     
     render() {
         requestAnimationFrame(this.render.bind(this));
-        var pixels = this.image.pixels;
-        for (var i = 0; i < this.w; i++) {
-            for (var j = 0; j < this.h; j++) {
-                var index = j*this.w + i;
-                var p = pixels[index];
-                this.fillPixel("rgb(" + p[0].toString() + ", " + p[1].toString() + ", " + p[2].toString() + ")", i, j)
-            }
-        }
+        this.image.paint(this.canvas);
         $("#generationNumber").text(this.generation);
+    }
+    
+    imgData(x, y, w, h) {
+        return this.context.getImageData(x, y, width, height).data
     }
     
     changeImage(image) {
@@ -164,7 +179,7 @@ class Canvas {
         this.context.clearRect(0, 0, this.w, this.h);
     }
     update(images) {
-        var imgs = evolve(images).slice();
+        var imgs = evolve(images, this).slice();
         this.changeImage(imgs[(imgs.length - 1)*(this.typeOfChild%2)]);
         this.fitToWindow();
         this.generation += 1;
@@ -179,17 +194,19 @@ class Canvas {
 
 
 
+    
 
-function evolve(images) {
+
+function evolve(images, canvas) {
     images.sort(function(im1, im2) {
-        return mlScore(im2) - mlScore(im1);
+        return score(im2) - score(im1);
     });
     var survivors = images.splice(0,Math.ceil(images.length / 2));
     var mutated = [];
     
     
     for (var img of survivors) {
-        mutated.push(mutate(img));
+        mutated.push(mutate(img, canvas));
     }
     var retVal = survivors.concat(mutated);
     for (var i = 0; i < retVal.length; i++) {
@@ -199,7 +216,7 @@ function evolve(images) {
 }
 
 //nondestructive
-function mutate(image) {
+function mutate(image, canvas) {
     var newImagePixels = [];
     var oldPixels = image.pixels;
     
@@ -219,23 +236,19 @@ function mutate(image) {
         }
     }
     
-    return new Image(newImagePixels);
+    return new Image(newImagePixels, canvas);
 }
 
 
 
-function mlScore(image, c) {
-    // var total = 0;
-    // for (var pixel of image.pixels) {
-    //     total += pixel[0];
-    //     total += pixel[1];
-    //     total += pixel[2];
-    // }
-    // return total;
-
-    var data = img_to_vol(image.getImage())
-    var dist = net(data)
-    return dist[c]
+function score(image, canvas) {
+     var total = 0;
+     for (var pixel of image.pixels) {
+         total += pixel[0];
+         total += pixel[1];
+         total += pixel[2];
+     }
+     return total;
 }
     
 function randomRGB() {
@@ -246,3 +259,4 @@ function randomRGB() {
 function setTypeOfChild(typeOfChild) {
     $("#typeOfChild").text(typeOfChildren[typeOfChild%typeOfChildren.length]);
 }
+
