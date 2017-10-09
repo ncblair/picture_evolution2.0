@@ -90,10 +90,13 @@ class Image {
         this.canvas = canvas;
     }
     
-    
-    getVol(twoDArray) {
-        return;
-    }
+    getVol() {
+        w = []
+        for (var c = 0; c < 3; c++) {
+            for (var pix of this.pixels) {
+                w.push(pix[c])
+            }
+        }
 
     
     getPixel(i, j) {
@@ -196,7 +199,7 @@ class Canvas {
 
 function evolve(images, canvas) {
     images.sort(function(im1, im2) {
-        return mlScore(im2) - mlScore(im1);
+        return score(im2) - score(im1);
     });
     var survivors = images.splice(0,Math.ceil(images.length / 2));
     var mutated = [];
@@ -238,7 +241,7 @@ function mutate(image, canvas) {
 
 
 
-function mlScore(image, canvas) {
+function score(image, canvas) {
      var total = 0;
      for (var pixel of image.pixels) {
          total += pixel[0];
