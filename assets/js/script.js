@@ -1,5 +1,5 @@
 const NUM_IMAGES = 20*2; //always even
-const IMAGE_WIDTH = 5;
+const IMAGE_WIDTH = 32;
 
 const invisibleCanvas = document.getElementById("invCanv");
 const invWidth = invisibleCanvas.width;
@@ -239,13 +239,13 @@ function mutate(image, canvas) {
 
 
 function mlScore(image, canvas) {
-    // var total = 0;
-    // for (var pixel of image.pixels) {
-    //     total += pixel[0];
-    //     total += pixel[1];
-    //     total += pixel[2];
-    // }
-    // return total;
+     var total = 0;
+     for (var pixel of image.pixels) {
+         total += pixel[0];
+         total += pixel[1];
+         total += pixel[2];
+     }
+     return total;
 
     
 }
