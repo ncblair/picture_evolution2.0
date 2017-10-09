@@ -246,8 +246,6 @@ function mlScore(image, canvas) {
          total += pixel[2];
      }
      return total;
-
-    
 }
     
 function randomRGB() {
