@@ -88,6 +88,7 @@ class Image {
     constructor(pixels, canvas) {
         this.pixels = pixels;
         this.canvas = canvas;
+        this.score = score(this);
     }
     
     getVol() {
@@ -97,6 +98,7 @@ class Image {
                 w.push(pix[c])
             }
         }
+    }
 
     
     getPixel(i, j) {
