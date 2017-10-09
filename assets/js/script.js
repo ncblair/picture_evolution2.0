@@ -85,8 +85,13 @@ class Image {
         this.pixels = pixels;
     }
     
-    getVol(twoDArray) {
-        return;
+    getVol() {
+        w = []
+        for (var c = 0; c < 3; c++) {
+            for (var pix of this.pixels) {
+                w.push(pix[c])
+            }
+        }
     }
 
     
@@ -219,7 +224,7 @@ function mutate(image) {
 
 
 
-function mlScore(image, canvas) {
+function mlScore(image, c) {
     // var total = 0;
     // for (var pixel of image.pixels) {
     //     total += pixel[0];
@@ -228,7 +233,9 @@ function mlScore(image, canvas) {
     // }
     // return total;
 
-    
+    var data = img_to_vol(image.getImage())
+    var dist = net(data)
+    return dist[c]
 }
     
 function randomRGB() {
