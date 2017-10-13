@@ -1,5 +1,5 @@
-const NUM_IMAGES = 1000*2; //always even
-const IMAGE_WIDTH = 5;
+const NUM_IMAGES = 500*2; //always even
+const IMAGE_WIDTH = 24;
 
 const invisibleCanvas = document.getElementById("invCanv");
 const invWidth = invisibleCanvas.width;
@@ -36,7 +36,7 @@ $(document).ready(function() {
         clearInterval(clock);
         clock = setInterval( function() {
             return c.update(images);
-        }, 20);
+        }, 5);
     });
     $("#pauseGeneration").click(function(event) {
         console.log("Pausing Generation");
@@ -53,7 +53,7 @@ $(document).ready(function() {
         clearInterval(clock);
         clock = setInterval(function() {
             return c.update(images);
-        }, 20);
+        }, 5);
     });
     $("#resetGeneration").click(function(event) {
         $("#resumeGeneration").css("display", "none");
@@ -88,7 +88,7 @@ class Image {
     constructor(pixels, canvas) {
         this.pixels = pixels;
         this.canvas = canvas;
-        this.score = score(this);
+        this.score = redSquareScore(this);
     }
     
     getVol() {
@@ -208,7 +208,12 @@ function evolve(images, canvas) {
     
     
     for (var img of survivors) {
-        mutated.push(mutate(img, canvas));
+        if (Math.random() > .99) {
+            mutated.push(mutate(img, canvas));
+        } else {
+            //REFERENCE
+            mutated.push(img);
+        }
     }
     var retVal = survivors.concat(mutated);
     for (var i = 0; i < retVal.length; i++) {
@@ -223,7 +228,7 @@ function mutate(image, canvas) {
     var oldPixels = image.pixels;
     
     for (var pix of oldPixels) {
-        if (Math.random() > .97) {
+        if (Math.random() > .99) {
             var weight = Math.random();
             var a = Math.floor((pix[0]*(weight) + randomRGB()*(1-weight)));
             var b = Math.floor((pix[1]*(weight) + randomRGB()*(1-weight)));
@@ -241,9 +246,20 @@ function mutate(image, canvas) {
     return new Image(newImagePixels, canvas);
 }
 
+//nondestructive
+function imgcpy(image, canvas) {
+    var newImagePixels = [];
+    var oldPixels = image.pixels;
+    
+    for (var pix of oldPixels) {
+        newImagePixels.push([pix[0], pix[1], pix[2]]);
+    }
+    
+    return new Image(newImagePixels, canvas);
+}
 
 
-function score(image, canvas) {
+function lightnessscore(image, canvas) {
      var total = 0;
      for (var pixel of image.pixels) {
          total += pixel[0];
@@ -251,6 +267,22 @@ function score(image, canvas) {
          total += pixel[2];
      }
      return total;
+}
+
+function redSquareScore(image, canvas) {
+    var total = 0;
+    for (var i = 0; i < IMAGE_WIDTH; i++) {
+        for (var j = 0; j < IMAGE_WIDTH; j++) {
+            var pixel = image.getPixel(i, j);
+            if ((i == 0 || i == IMAGE_WIDTH - 1) || (j == 0 || j == IMAGE_WIDTH -1)){
+                total += pixel[0] - pixel[1] - pixel[2];
+            } else {
+                //not on box;
+                total += pixel[0] + pixel[1] + pixel[2];
+            }
+        }
+    }
+    return total;
 }
     
 function randomRGB() {
