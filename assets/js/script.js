@@ -156,7 +156,7 @@ class Canvas {
     }
     
     imgData(x, y, w, h) {
-        return this.context.getImageData(x, y, width, height).data
+        return this.context.getImageData(x, y, w, h).data
     }
     
     changeImage(image) {
