@@ -88,7 +88,7 @@ class Image {
     constructor(pixels, canvas) {
         this.pixels = pixels;
         this.canvas = canvas;
-        this.score = mlScore(this);
+        this.score = redSquareScore(this);
     }
     
     getVol() {
@@ -287,15 +287,6 @@ function redSquareScore(image) {
 
 function mlScore(image) {
     var img = image.getImg();
-    $.ajax({
-                type:'POST',//type of ajax
-                url:'/../php/test.php',//where the request is going
-                data:{"img": img},//the variable you want to send
-                success:function(result){
-                    //result is your result from the xhttpRequest.
-                    console.log("result" + result);
-                }
-            })
     return 0;
 }
 
