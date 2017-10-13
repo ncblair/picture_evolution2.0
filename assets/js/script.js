@@ -88,7 +88,7 @@ class Image {
     constructor(pixels, canvas) {
         this.pixels = pixels;
         this.canvas = canvas;
-        this.score = mlscore(this);
+        this.score = mlScore(this);
     }
     
     getVol() {
