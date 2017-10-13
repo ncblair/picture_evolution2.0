@@ -1,5 +1,5 @@
 const NUM_IMAGES = 500*2; //always even
-const IMAGE_WIDTH = 24;
+const IMAGE_WIDTH = 5;
 
 const invisibleCanvas = document.getElementById("invCanv");
 const invWidth = invisibleCanvas.width;
@@ -88,7 +88,7 @@ class Image {
     constructor(pixels, canvas) {
         this.pixels = pixels;
         this.canvas = canvas;
-        this.score = redSquareScore(this);
+        this.score = mlscore(this);
     }
     
     getVol() {
@@ -259,7 +259,7 @@ function imgcpy(image, canvas) {
 }
 
 
-function lightnessscore(image, canvas) {
+function lightnessscore(image) {
      var total = 0;
      for (var pixel of image.pixels) {
          total += pixel[0];
@@ -269,7 +269,7 @@ function lightnessscore(image, canvas) {
      return total;
 }
 
-function redSquareScore(image, canvas) {
+function redSquareScore(image) {
     var total = 0;
     for (var i = 0; i < IMAGE_WIDTH; i++) {
         for (var j = 0; j < IMAGE_WIDTH; j++) {
@@ -284,7 +284,21 @@ function redSquareScore(image, canvas) {
     }
     return total;
 }
-    
+
+function mlScore(image) {
+    var img = image.getImg();
+    $.ajax({
+                type:'POST',//type of ajax
+                url:'/../php/test.php',//where the request is going
+                data:{"img": img},//the variable you want to send
+                success:function(result){
+                    //result is your result from the xhttpRequest.
+                    console.log("result" + result);
+                }
+            })
+    return 0;
+}
+
 function randomRGB() {
     return Math.floor(Math.random()*255);
 }
