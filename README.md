@@ -15,4 +15,4 @@
     
 ## By Nathan Blair and Adarsh Karnati
 
-Originally, this was a python project. To see how we implemented image evolution in python, check out my Picture_Evolution repository (See Picture_Evolution/helpers/engine.py)
+Originally, this was a python project. To see how we implemented image evolution in python, check out my Picture_Evolution repository

@@ -1,5 +1,5 @@
 const NUM_IMAGES = 500*2; //always even
-const IMAGE_WIDTH = 5;
+const IMAGE_WIDTH = 20;
 
 const invisibleCanvas = document.getElementById("invCanv");
 const invWidth = invisibleCanvas.width;
@@ -88,7 +88,7 @@ class Image {
     constructor(pixels, canvas) {
         this.pixels = pixels;
         this.canvas = canvas;
-        this.score = redSquareScore(this);
+        this.score = blueSquareScore(this);
     }
     
     getVol() {
@@ -206,14 +206,16 @@ function evolve(images, canvas) {
     var survivors = images.splice(0,Math.ceil(images.length / 2));
     var mutated = [];
     
-    
+    //playing around with different ways to evolve
+    var oddsOfMutation = 0;
     for (var img of survivors) {
-        if (Math.random() > .99) {
+        if (Math.random() + oddsOfMutation/4 > .99) {
             mutated.push(mutate(img, canvas));
         } else {
             //REFERENCE
             mutated.push(img);
         }
+        oddsOfMutation += 1/survivors.length;
     }
     var retVal = survivors.concat(mutated);
     for (var i = 0; i < retVal.length; i++) {
@@ -227,6 +229,7 @@ function mutate(image, canvas) {
     var newImagePixels = [];
     var oldPixels = image.pixels;
     
+    //playing around with different ways to mutate
     for (var pix of oldPixels) {
         if (Math.random() > .99) {
             var weight = Math.random();
@@ -269,13 +272,13 @@ function lightnessscore(image) {
      return total;
 }
 
-function redSquareScore(image) {
+function blueSquareScore(image) {
     var total = 0;
     for (var i = 0; i < IMAGE_WIDTH; i++) {
         for (var j = 0; j < IMAGE_WIDTH; j++) {
             var pixel = image.getPixel(i, j);
             if ((i == 0 || i == IMAGE_WIDTH - 1) || (j == 0 || j == IMAGE_WIDTH -1)){
-                total += pixel[0] - pixel[1] - pixel[2];
+                total += pixel[2] - pixel[1] - pixel[0];
             } else {
                 //not on box;
                 total += pixel[0] + pixel[1] + pixel[2];
